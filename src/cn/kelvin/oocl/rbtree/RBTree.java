@@ -15,6 +15,7 @@ public class RBTree<T extends Comparable<T>> {
     	this.mRoot = new RBTNode<T>(BLACK, rootKey);
    	}
 	
+    //添加节点
 	public void insert(T key){
 		if(null==key){
 			return;
@@ -55,7 +56,7 @@ public class RBTree<T extends Comparable<T>> {
 		insertFixUp(node);
 	}
 	
-	//修正红黑树
+	//插入节点后修正红黑树
 	private void insertFixUp(RBTNode<T> node) {
 		RBTNode<T> parent, gparent;
 		parent = parentOf(node);
@@ -130,6 +131,80 @@ public class RBTree<T extends Comparable<T>> {
 			}
 			
 		}
+	}
+
+	//删除节点
+	public void remove(T key){
+		RBTNode<T> node = search(this.mRoot, key);
+		if(null!=node){
+			remove(node);
+		}
+	}
+	
+	private void remove(RBTNode<T> node) {
+		RBTNode<T> child=null,parent=null;
+		boolean color=false;
+		
+		//删除的节点有两个孩子,转化为删除该节点的后继节点
+		if((node.left!=null) && (node.right!=null)){
+			//记录后继节点
+			RBTNode<T> replace = node.right;
+			while(replace.left!=null)
+				replace = replace.left;
+			
+			child = replace.right;
+			parent = replace.parent;
+			if(parent==node){
+				node.right = child;
+				if(child!=null){
+					child.parent = node;
+				}
+			}else {
+				parent.left = child;
+				if(child!=null){
+					child.parent = parent;
+				}
+			}
+				
+			//将后继节点数据拷贝到待删除节点
+			node.key = replace.key;	
+			color = replace.color;
+			if(color==BLACK){
+				removeFixUp(child,parent);
+			}
+			replace = null;
+			return;
+		}
+		
+		if(node.left!=null){
+			child = node.left;
+		}else {
+			child = node.right;
+		}
+		parent = node.parent;
+		
+		if(parent!=null){
+			if(parent.left==node){
+				parent.left = child;
+			}else {
+				parent.right = child;
+			}
+		}else {
+			this.mRoot = child;
+		}
+		
+		if(child!=null){
+			child.parent = parent;
+		}
+		if(node.color==BLACK){
+			removeFixUp(child,parent);
+		}
+		node = null;
+	}
+
+	//删除节点后，修正红黑树
+	private void removeFixUp(RBTNode<T> child, RBTNode<T> parent) {
+		
 	}
 
 	private void setRed(RBTNode<T> node) {
@@ -224,6 +299,20 @@ public class RBTree<T extends Comparable<T>> {
 		}
 	}
 	
+	//查找节点
+	public RBTNode<T> search(RBTNode<T> root,T key){
+		if(null==root || null==key){
+			return null;
+		}
+		int cmp = key.compareTo(root.key);
+		if(cmp<0)
+			return search(root.left, key);
+		else if(cmp>0)
+			return search(root.right, key);
+		else 
+			return root;
+	}
+	
 	public void inOrder(RBTNode<T> root){
 		if(root!=null){
 			inOrder(root.left);
@@ -253,6 +342,24 @@ public class RBTree<T extends Comparable<T>> {
 	 * @param root
 	 */
 	public void listOrder(RBTNode<T> root){
+		if(root==null){
+			return;
+		}
+		Queue<RBTNode<T>> queue = new ArrayDeque<>();
+		queue.offer(root);
+		RBTNode<T> curr = null;
+		while(!queue.isEmpty()){
+			curr = queue.poll();
+			System.out.print(curr.key.toString()+" ");
+			if(curr.left != null){
+				queue.offer(curr.left);
+			}
+			if(curr.right != null){
+				queue.offer(curr.right);
+			}
+		}
+	}
+	public void listOrderWithColor(RBTNode<T> root){
 		if(root==null){
 			return;
 		}
