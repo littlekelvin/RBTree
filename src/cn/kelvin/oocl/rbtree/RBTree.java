@@ -203,8 +203,37 @@ public class RBTree<T extends Comparable<T>> {
 	}
 
 	//删除节点后，修正红黑树
-	private void removeFixUp(RBTNode<T> child, RBTNode<T> parent) {
+	private void removeFixUp(RBTNode<T> node, RBTNode<T> parent) {
+		//node的兄弟节点
+		RBTNode<T> silNode = null;
 		
+		//如果node是黑色的话，那么必为NIL节点
+		while((node == null || isBlack(node)) && (node != this.mRoot)){
+			if (parent.left == node) {
+				silNode = parent.right;
+				if(isRed(silNode)){		//case 1: 兄弟节点是红色节点，则parent为黑色，silNode的两个儿子都为黑色
+					setBlack(silNode);
+					setRed(parent );
+					leftRotate(parent);
+					silNode = parent.right;
+				}
+				
+				if((node.left==null || isBlack(node.left) && (node.right==null || isBlack(node.right)))){
+					setRed(silNode);
+					node = parent;
+					parent = parentOf(node);
+					continue;
+				}else {
+					
+				}
+			}else {
+				
+			}
+		}
+		
+		//如果node不是NIL节点，则必为红色
+		if(node != null)
+			setBlack(node);
 	}
 
 	private void setRed(RBTNode<T> node) {
@@ -220,6 +249,10 @@ public class RBTree<T extends Comparable<T>> {
 	private boolean isRed(RBTNode<T> node) {
 		return ((node!=null) && (node.color==RED)) ? true : false;
 	}
+	
+	private boolean isBlack(RBTNode<T> node) {
+		return ((node!=null) && (node.color==BLACK)) ? true : false;
+	}
 
 	private RBTNode<T> parentOf(RBTNode<T> node) {
 		return (node!=null) ? node.parent : null;
@@ -233,8 +266,8 @@ public class RBTree<T extends Comparable<T>> {
 	 *    x                            y                
 	 *   / \      --(左旋)-.           / \                #
 	 *  lx  y                        x  ry     
-	 *     / \                      /    \
-	 *    ly ry                    lx    ly  
+	 *     / \                      / \
+	 *    ly ry                    lx ly  
 	 */
 	public void leftRotate(RBTNode<T> p){
 		RBTNode<T> parent = p.parent;	// 父节点
