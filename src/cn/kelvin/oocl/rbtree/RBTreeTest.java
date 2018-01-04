@@ -21,9 +21,13 @@ public class RBTreeTest {
 		System.out.println();
 		tree.inOrder(tree.mRoot);
 	}
+
+	public void testRemoveFixUp(){
+
+	}
 	
 	@Test
-	public void testInsert(){
+	public void testRemove(){
 		RBTree<Integer> tree = new RBTree<Integer>(10);
 		tree.insert(7);
 		tree.insert(12);

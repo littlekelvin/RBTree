@@ -217,17 +217,65 @@ public class RBTree<T extends Comparable<T>> {
 					leftRotate(parent);
 					silNode = parent.right;
 				}
-				
-				if((node.left==null || isBlack(node.left) && (node.right==null || isBlack(node.right)))){
+
+				//case 2: 兄弟节点是黑色节点,其左右孩子都为黑色
+				if((silNode.left==null || isBlack(silNode.left) && (silNode.right==null || isBlack(silNode.right)))){
 					setRed(silNode);
 					node = parent;
 					parent = parentOf(node);
 					continue;
 				}else {
-					
+					//case 3: 兄弟节点是黑色，左孩子是红色，右孩子是黑色
+					if(silNode.right==null || isBlack(silNode.right)){
+						if(silNode.left!=null)
+							setBlack(silNode.left);
+						setRed(silNode);
+						rightRotate(silNode);
+						silNode = parent.right;
+					}
+
+					//case 4: 兄弟节点黑色，左孩子任意颜色，右孩子是红色
+					silNode.color = parent.color;
+					setBlack(parent);
+					if(silNode.right!=null){
+						setBlack(silNode.right);
+					}
+					leftRotate(parent);
+					break;
 				}
 			}else {
-				
+				silNode = parent.left;
+				if(isRed(silNode)){
+					setBlack(silNode);
+					setRed(parent );
+					rightRotate(parent);
+					silNode = parent.left;
+				}
+
+				if((silNode.left==null || isBlack(silNode.left) && (silNode.right==null || isBlack(silNode.right)))){
+					setRed(silNode);
+					node = parent;
+					parent = parentOf(node);
+					continue;
+				}else {
+					//case 3: 兄弟节点是黑色，左孩子是黑色，右孩子是红色
+					if(silNode.left==null || isBlack(silNode.left)){
+						if(silNode.right!=null)
+							setBlack(silNode.right);
+						setRed(silNode);
+						leftRotate(silNode);
+						silNode = parent.left;
+					}
+
+					//case 4: 兄弟节点黑色，右孩子任意颜色，左孩子是红色
+					silNode.color = parent.color;
+					setBlack(parent);
+					if(silNode.left!=null){
+						setBlack(silNode.left);
+					}
+					rightRotate(parent);
+					break;
+				}
 			}
 		}
 		
@@ -301,9 +349,9 @@ public class RBTree<T extends Comparable<T>> {
 	 *            py                             py
 	 *           /                              /
 	 *          y                              x                  
-	 *         /  \      --(右旋)-.            /  \                     #
+	 *         /  \      --(右旋)-.            /  \
 	 *        x   ry                         lx  y  
-	 *       / \                                / \                   #
+	 *       / \                                / \
 	 *      lx  rx                             rx  ry
 	 * 
 	 */
