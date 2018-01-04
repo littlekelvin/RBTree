@@ -90,6 +90,7 @@ public class RBTree<T extends Comparable<T>> {
 						setRed(gparent);
 					}
 					rightRotate(gparent);
+					node = parent;
 				}
 				//case 3: 叔叔是黑色，当前节点是左孩子或者叔叔是null
 				else{
@@ -120,6 +121,7 @@ public class RBTree<T extends Comparable<T>> {
 						setRed(gparent);
 					}
 					leftRotate(gparent);
+					node = parent;
 				}
 				else {//case 6:叔叔节点是黑色，且当前节点是右孩子或者叔叔是null
 					setBlack(parent);
